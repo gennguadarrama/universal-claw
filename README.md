@@ -169,6 +169,7 @@ remote-terminal share
 remote-terminal --detached
 remote-terminal --attach <tmux-target>
 remote-terminal --cwd <dir>
+remote-terminal --show-full-urls
 remote-terminal --no-open
 remote-terminal doctor
 remote-terminal auth <ngrok-token>
@@ -193,6 +194,8 @@ Behavior summary:
 - Remote access can be revoked per session
 - `Stop Remote Access` disables the public tunnel
 - `End All & Exit` revokes remotes, stops `ngrok`, closes detached sessions created for remotes, and shuts down the host
+- Startup terminal output masks `admin` and remote `token` query parameters by default
+- If you explicitly need copyable full startup links from the terminal, use `remote-terminal --show-full-urls`
 
 ## Troubleshooting
 

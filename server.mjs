@@ -17,6 +17,9 @@ const literalEnterDelayMs = Math.max(
   0,
   Number.parseInt(process.env.REMOTE_TERMINAL_SEND_ENTER_DELAY_MS || "180", 10) || 180,
 );
+const showFullStartupUrls = /^(1|true|yes)$/i.test(
+  process.env.REMOTE_TERMINAL_SHOW_FULL_URLS || "",
+);
 const legacySessionTarget = process.env.REMOTE_TMUX_SESSION || "";
 const explicitTargetList = [
   ...splitCsvTargets(process.env.REMOTE_TMUX_TARGETS || ""),
@@ -111,6 +114,38 @@ function wait(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+}
+
+function maskSecret(value) {
+  const text = String(value || "");
+  if (!text) {
+    return text;
+  }
+
+  if (text.length <= 8) {
+    return `${text.slice(0, 2)}...${text.slice(-2)}`;
+  }
+
+  return `${text.slice(0, 4)}...${text.slice(-4)}`;
+}
+
+function formatAccessUrl(rawUrl) {
+  if (showFullStartupUrls || !rawUrl) {
+    return rawUrl;
+  }
+
+  try {
+    const url = new URL(rawUrl);
+    for (const key of ["admin", "token"]) {
+      const value = url.searchParams.get(key);
+      if (value) {
+        url.searchParams.set(key, maskSecret(value));
+      }
+    }
+    return url.toString();
+  } catch {
+    return rawUrl;
+  }
 }
 
 function nextRemoteLabel() {
@@ -803,20 +838,27 @@ async function openHostDashboard() {
 }
 
 function printStartupSummary() {
+  const hostDashboardUrl = `http://127.0.0.1:${state.serverPort}/host?admin=${adminToken}`;
+
   console.log("");
   console.log("Remote terminal listo.");
   console.log(`cwd default: ${state.defaultWorkingDirectory}`);
-  console.log(`host dashboard: http://127.0.0.1:${state.serverPort}/host?admin=${adminToken}`);
+  console.log(`host dashboard: ${formatAccessUrl(hostDashboardUrl)}`);
 
   for (const remote of getActiveRemotes()) {
     console.log(`remote: ${remote.label} -> ${remote.targetRef}`);
-    if (buildRemoteUrl(remote)) {
-      console.log(`url: ${buildRemoteUrl(remote)}`);
+    const remoteUrl = buildRemoteUrl(remote);
+    if (remoteUrl) {
+      console.log(`url: ${formatAccessUrl(remoteUrl)}`);
     }
   }
 
   if (state.error) {
     console.log(`warning: ${state.error}`);
+  }
+
+  if (!showFullStartupUrls) {
+    console.log("note: startup access URLs are masked in terminal output. Use --show-full-urls if you need copyable links.");
   }
 
   console.log("");

@@ -27,6 +27,7 @@ function usage() {
   remote-terminal --attach <tmux-target>
   remote-terminal --cwd <dir>
   remote-terminal --no-open
+  remote-terminal --show-full-urls
   remote-terminal doctor
   remote-terminal auth <ngrok-token>
   remote-terminal auth --status
@@ -39,6 +40,7 @@ Behavior:
   - Outside tmux, it creates a detached remote session in the current directory.
   - --attach targets a specific tmux pane/session manually.
   - --detached forces a new detached session even if you are inside tmux.
+  - --show-full-urls reveals full host and remote access URLs in terminal output and logs.
   - doctor validates external dependencies and ngrok auth setup.
   - auth stores the ngrok authtoken locally so users do not need to export it every time.
 `);
@@ -182,6 +184,7 @@ function parseArgs(argv) {
     cwd: process.cwd(),
     forceDetached: false,
     noOpen: false,
+    showFullUrls: false,
     doctorOnly: false,
     shareCurrent: false,
   };
@@ -221,6 +224,11 @@ function parseArgs(argv) {
 
     if (arg === "--no-open") {
       options.noOpen = true;
+      continue;
+    }
+
+    if (arg === "--show-full-urls") {
+      options.showFullUrls = true;
       continue;
     }
 
@@ -331,7 +339,8 @@ async function main() {
 
   const timestamp = new Date().toISOString().replaceAll(":", "-");
   const logPath = path.join(logDir, `remote-terminal-${timestamp}.log`);
-  const logFd = fs.openSync(logPath, "a");
+  const logFd = fs.openSync(logPath, "a", 0o600);
+  fs.chmodSync(logPath, 0o600);
   const { mode, remoteTarget } = chooseMode(options);
   const childEnv = {
     ...process.env,
@@ -344,6 +353,10 @@ async function main() {
 
   if (options.noOpen) {
     childEnv.REMOTE_TERMINAL_NO_OPEN = "1";
+  }
+
+  if (options.showFullUrls) {
+    childEnv.REMOTE_TERMINAL_SHOW_FULL_URLS = "1";
   }
 
   const child = spawn(process.execPath, [serverPath, options.cwd], {
@@ -368,9 +381,9 @@ async function main() {
   for (let attempt = 0; attempt < 40; attempt += 1) {
     if (fs.existsSync(logPath)) {
       const content = fs.readFileSync(logPath, "utf8");
-      if (content.includes("host dashboard:") || content.includes("warning:")) {
+      if (content.includes("host dashboard:") || content.includes("warning:") || content.includes("note:")) {
         const lines = content.split("\n");
-        for (const prefix of ["host dashboard:", "remote:", "url:", "warning:"]) {
+        for (const prefix of ["host dashboard:", "remote:", "url:", "warning:", "note:"]) {
           const line = lines.find((entry) => entry.startsWith(prefix));
           if (line) {
             console.log(line);
