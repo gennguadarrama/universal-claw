@@ -1,7 +1,7 @@
 {
   "name": "universal-claw",
   "version": "0.1.0",
-  "description": "Remote access to your local tmux-backed CLI and AI agent sessions through your own machine, logins, and subscriptions.",
+  "description": "Remote access to local tmux-backed CLI and AI coding-agent sessions, reusing your machine's logins and subscriptions instead of separate API-key setup.",
   "type": "module",
   "bin": {
     "remote-terminal": "./bin/remote-terminal.js"
