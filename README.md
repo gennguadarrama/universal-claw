@@ -1,12 +1,23 @@
 # Universal Claw
 
-Universal Claw lets you control one or more `tmux` terminal sessions from your phone through a mobile web UI. It runs a local host dashboard, exposes a secure remote URL through `ngrok`, and gives each remote session its own shareable link and QR code.
+Universal Claw gives you remote access to the terminal workflows already running on your own machine. It lets you control one or more `tmux` sessions from your phone through a mobile web UI, expose them through your own `ngrok` tunnel, and open each remote session with its own secure URL and QR code.
+
+Instead of moving your work into a hosted IDE or pasting provider tokens into a separate mobile app, Universal Claw is designed to reuse the CLI tools, logins, subscriptions, repositories, and shell environment you already trust on your own computer.
+
+## Why This Exists
+
+- Reuse already-authenticated local CLI tools and subscriptions from anywhere
+- Work with one provider or multiple providers at the same time through separate terminal sessions
+- Control your real machine, repos, and shell workflows instead of a hosted wrapper
+- Create repositories, review code, run commands, and keep long-lived agent sessions alive while away from your desk
+- Stay close to the terminal environment you already use for Codex, Claude Code, OpenCode, plain shells, or any other CLI workflow
 
 ## What It Does
 
 - Share the `tmux` pane you are already using
 - Start clean detached terminal sessions remotely
 - Manage multiple remotes from one dashboard
+- Reuse your existing machine-level CLI logins instead of re-entering provider credentials in a second tool
 - Open each remote from a phone with a QR code or secure URL
 - Send typed or dictated input from mobile
 - Use terminal-friendly mobile shortcuts such as `Esc`, `Tab`, `Enter`, `Ctrl+C`, and `End`

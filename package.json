@@ -1,7 +1,7 @@
 {
   "name": "universal-claw",
   "version": "0.1.0",
-  "description": "Share and control tmux-backed terminal sessions from your phone through a mobile-friendly remote web UI.",
+  "description": "Remote access to your local tmux-backed CLI and AI agent sessions through your own machine, logins, and subscriptions.",
   "type": "module",
   "bin": {
     "remote-terminal": "./bin/remote-terminal.js"
