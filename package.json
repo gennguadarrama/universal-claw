@@ -1,0 +1,36 @@
+{
+  "name": "universal-claw",
+  "version": "0.1.0",
+  "description": "Share and control tmux-backed terminal sessions from your phone through a mobile-friendly remote web UI.",
+  "type": "module",
+  "bin": {
+    "remote-terminal": "./bin/remote-terminal.js"
+  },
+  "files": [
+    "bin",
+    "server.mjs",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "author": "Genaro Guadarrama",
+  "keywords": [
+    "tmux",
+    "terminal",
+    "remote-terminal",
+    "mobile",
+    "qr",
+    "ngrok",
+    "cli"
+  ],
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check server.mjs && node --check bin/remote-terminal.js"
+  },
+  "dependencies": {
+    "@ngrok/ngrok": "^1.5.2",
+    "qrcode": "^1.5.4"
+  }
+}
